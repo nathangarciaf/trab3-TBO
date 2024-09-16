@@ -1,2 +1,2 @@
 all:
-	gcc -g -o trab3 *.c
+	gcc -Wall -g -o trab3 *.c

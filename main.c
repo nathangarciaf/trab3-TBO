@@ -26,14 +26,18 @@ void index_read(Index *i, FILE *f){
     while (fgets(buffer, INDEX_LINE_LENGTH, f)){
         if(i->size == i->alloc){
             i->alloc *= 2;
-            i->docs = (char**)realloc(i->docs, i->alloc);
+            i->docs = (char**)realloc(i->docs, i->alloc * sizeof(char*));
         }
-        printf("AQUI");
-        i->docs[i->size] = buffer;
-        printf("AQUI");
-        i->size++;
+        i->docs[i->size] = (char*)malloc((strlen(buffer) + 1) * sizeof(char));
+        strcpy(i->docs[i->size], buffer);
+        i->size++;        
+    }       
+}
+
+void print_index(Index *index){
+    for(int i =0; i < index->size; i++){
+        printf("STR %d: %s\n", i, index->docs[i]);
     }
-        
 }
 
 void index_free(Index *index){
@@ -55,9 +59,10 @@ int main(int argc, char *argv[]){
         printf("Erro no arquivo: %s\n", argv[1]);
         return 1;
     }
-
     Index *idx = index_init();
     index_read(idx, index);
+
+    print_index(idx);
     index_free(idx);
 
     FILE *stopwords = fopen(argv[2], "r");
@@ -66,6 +71,7 @@ int main(int argc, char *argv[]){
 
     fclose(stopwords);
     fclose(graph);
+    fclose(index);
 
     DIR *diretorio;
     struct dirent *entrada;
@@ -82,7 +88,7 @@ int main(int argc, char *argv[]){
         if (strcmp(entrada->d_name, ".") != 0 && strcmp(entrada->d_name, "..") != 0) {
             char caminho_completo[512];
             snprintf(caminho_completo, sizeof(caminho_completo), "%s/%s", argv[4], entrada->d_name);
-            printf("%s\n",entrada->d_name);
+            //printf("%s\n",entrada->d_name);
             //ler_arquivo(caminho_completo);
         }
     }
