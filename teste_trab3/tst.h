@@ -1,15 +1,12 @@
 #ifndef TST_H
 #define TST_H
 
+#include "string.h"
+
 #define VAL_DEFAULT_ALLOC 2
 
 typedef struct value Value;
-typedef struct string String;
 typedef struct node TST;
-
-String *string_create(char *str);
-int compare_from(String *s, String *t, int d);
-void string_free(String *s);
 
 TST *create_node();
 

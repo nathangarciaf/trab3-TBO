@@ -1,13 +1,8 @@
 #include "tst.h"
+#include "string.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-
-struct string {
-    char *c;
-    int len;
-};
 
 struct value {
     String **files;
@@ -20,42 +15,6 @@ struct node {
     TST *l, *m, *r;
 };
 
-String *string_create(char *str) {
-    String *s = (String*)calloc(1, sizeof(String));
-    int len = strlen(str);
-
-    if ((len > 0 && str[len - 1] == '\n') || (len > 0 && str[len - 1] == '\t') ) {
-        str[len - 1] = '\0';
-        len--; 
-    }
-
-    s->c = (char*)calloc((len + 1), sizeof(char));
-    strcpy(s->c, str);
-
-    for(int i = 0; i < len; i++){
-        if(isupper(s->c[i]))
-            s->c[i] = tolower(s->c[i]);
-    }
-    s->len = len;
-
-    return s;
-}
-
-int compare_from(String *s, String *t, int d) {
-    int min = s->len < t->len ? s->len : t->len;
-    for (int i = d; i < min; i++) {
-        if (s->c[i] < t->c[i]) { return -1; }
-        if (s->c[i] > t->c[i]) { return 1; }
-    }
-    return s->len - t->len;
-}
-
-
-void string_free(String *s){
-    free(s->c);
-    free(s);
-}
-
 TST *create_node(){
     TST *t = (TST*)calloc(1, sizeof(TST));
     t->l = t->r = t->m = NULL;
@@ -65,12 +24,12 @@ TST *create_node(){
 }
 
 TST* rec_insert(TST* t, String* key, String* val, int d) {
-    unsigned char c = key->c[d];
+    unsigned char c = string_get_char(key, d);
     if (t == NULL) { t = create_node(); t->c = c;}
     if (c < t->c) {  t->l = rec_insert(t->l, key, val, d); }
     else if (c > t->c) { t->r = rec_insert(t->r, key, val, d); }
 
-    else if (d < key->len - 1) {
+    else if (d < string_len(key) - 1) {
         t->m = rec_insert(t->m, key, val, d+1);
     } 
     else {
@@ -88,11 +47,11 @@ TST* TST_insert(TST* t, String* key , String* val) {
 
 TST* rec_search(TST* t, String* key, int d) {
     if (t == NULL) { return NULL; }
-    unsigned char c = key->c[d];
+    unsigned char c = string_get_char(key, d);
 
     if (c < t->c) { return rec_search(t->l, key, d); }
     else if (c > t->c) { return rec_search(t->r, key, d); }
-    else if (d < key->len - 1) {
+    else if (d < string_len(key) - 1) {
         return rec_search(t->m, key, d+1);
     } 
     else { return t; }
@@ -161,9 +120,7 @@ void print_val(Value *v){
     if(!v)
         return;
     String **s = v->files;
-    for (int i = 0; i < v->size; i++){
-        printf("%s ", s[i]->c);
-    }
+    string_print(s, v->size);
 }
 
 void Value_free_reduced(Value *v){
