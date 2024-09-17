@@ -8,7 +8,8 @@ TST *read_dir_files(TST *t, TST *stopwords, char *dir, FILE *index){
     while ((nread = getline(&dir_buffer, &dir_len, index)) != -1) {
         //\n
         int buffer_len = strlen(dir_buffer);
-        dir_buffer[buffer_len - 1] = '\0'; 
+        if( dir_buffer[buffer_len - 1] == '\n')
+            dir_buffer[buffer_len - 1] = '\0'; 
         //printf("BUFFER: %s\n", buffer);
 
         int path_len = strlen(dir) + strlen(dir_buffer) + 2;

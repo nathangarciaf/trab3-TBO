@@ -33,12 +33,29 @@ int main(int argc, char *argv[]){
     ssize_t nread = 0;
 
     while ((nread = getline(&line, &size, stdin)) != -1) {
+        int len = strlen(line);
+        char *og_line = (char*)calloc((len + 1), sizeof(char));
+        strcpy(og_line, line);
+        og_line[len-1] = '\0';
+        
         char *str = strtok(line, " \n");
+        Value *commom_files = NULL;
+
         while (str != NULL) {
-            printf("linha lida: %s\n", str);
+            String *string = string_create(str);
+            Value *v = TST_search(words, string);
+            string_free(string);
+
+            if(v){ commom_files = intersect_val(commom_files, v); }
+
             str = strtok(NULL, " \n");
         }
+
+        print_results(og_line, commom_files);
+        free(og_line);
+        Value_free_reduced(commom_files);
     }
+    
     free(line);
 
     FILE *graph = fopen(argv[3], "r");

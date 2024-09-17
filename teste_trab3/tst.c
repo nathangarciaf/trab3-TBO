@@ -41,17 +41,19 @@ String *string_create(char *str) {
     return s;
 }
 
+int compare_from(String *s, String *t, int d) {
+    int min = s->len < t->len ? s->len : t->len;
+    for (int i = d; i < min; i++) {
+        if (s->c[i] < t->c[i]) { return -1; }
+        if (s->c[i] > t->c[i]) { return 1; }
+    }
+    return s->len - t->len;
+}
+
+
 void string_free(String *s){
     free(s->c);
     free(s);
-}
-
-Value *val_init(){
-    Value *v = (Value*)calloc(1,sizeof(Value));
-    v->alloc = 2;
-    v->files = (String**)calloc(v->alloc, sizeof(String*));
-    v->size = 0;
-    return v;
 }
 
 TST *create_node(){
@@ -60,16 +62,6 @@ TST *create_node(){
     t->val = NULL;
     t->c = '\0';
     return t;
-}
-
-void TST_add_value(TST *t, String *val){
-    Value *v = t->val;
-    if(v->alloc == v->size){
-        v->alloc *= 2;
-        v->files = (String**)realloc(v->files, v->alloc * sizeof(String*) ) ;
-    }
-    v->files[v->size] = val;
-    v->size++;
 }
 
 TST* rec_insert(TST* t, String* key, String* val, int d) {
@@ -84,7 +76,7 @@ TST* rec_insert(TST* t, String* key, String* val, int d) {
     else {
         if(!t->val)
             t->val = val_init();
-        TST_add_value(t, val);
+        Value_insert(t->val, val);
         
     }
     return t;
@@ -112,20 +104,78 @@ Value *TST_search(TST* t, String* key) {
     else { return t->val; }
 }
 
-void val_free(Value *v){
+Value *val_init(){
+    Value *v = (Value*)calloc(1,sizeof(Value));
+    v->alloc = 2;
+    v->files = (String**)calloc(v->alloc, sizeof(String*));
+    v->size = 0;
+    return v;
+}
+
+void Value_insert(Value *v, String *s){
+    if(v->alloc == v->size){
+        v->alloc *= 2;
+        v->files = (String**)realloc(v->files, v->alloc * sizeof(String*));
+    }
+    v->files[v->size] = s;
+    v->size++;
+}
+
+Value *intersect_val(Value *commom, Value *v){
+    if(!commom){
+        commom = val_init();
+        //printf("SIZE V: %d\n", v->size);
+        for(int i = 0; i < v->size; i++){
+            Value_insert(commom, v->files[i]);
+            //printf("string atual: %s\n", commom->files[i]->c);
+        }
+    }
+    else{
+        Value *result = val_init();
+        for(int i = 0; i < commom->size; i++){
+            for(int j = 0; j < v->size; j++){
+                //printf("STR 1:%s\nSTR 2: %s\n", commom->files[i]->c, v->files[j]->c);
+                if(!compare_from(commom->files[i], v->files[j], 0)){
+                    Value_insert(result, commom->files[i]);
+                    break;
+                }
+            }
+        }
+        Value_free_reduced(commom);
+        return result;
+    }
+
+    return commom;
+}
+
+void print_results(char *s, Value *v){
+    printf("search:%s\n", s);
+    printf("pages:");
+    print_val(v);
+    printf("\n");
+    printf("pr:");
+    printf("\n");
+}
+
+void print_val(Value *v){
+    if(!v)
+        return;
+    String **s = v->files;
+    for (int i = 0; i < v->size; i++){
+        printf("%s ", s[i]->c);
+    }
+}
+
+void Value_free_reduced(Value *v){
+    if(v){ free(v->files); free(v); } 
+}
+
+void Value_free(Value *v){
     for(int i = 0; i < v->size; i++){
         string_free(v->files[i]);
     }
     free(v->files);
     free(v);
-}
-
-void print_val(Value *v){
-    String **s = v->files;
-    for (int i = 0; i < v->size; i++){
-        printf("ARQUIVO: %s\n", s[i]->c);
-    }
-    return;
 }
 
 void TST_free(TST *t){
@@ -135,7 +185,7 @@ void TST_free(TST *t){
     TST_free(t->r);
 
     if(t->val)
-        val_free(t->val);
+        Value_free(t->val);
     free(t);
 }
 
