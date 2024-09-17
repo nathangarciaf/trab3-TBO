@@ -72,10 +72,6 @@ TST* TST_insert(TST* t, String* key , Value val) {
 TST* rec_search(TST* t, String* key, int d) {
     if (t == NULL) { return NULL; }
     unsigned char c = key->c[d];
-    /*printf("CARAC ATUAL: %c\n", c);
-    printf("TAMANHO DA CHAVE: %d\n", key->len);
-    printf("VAL ATUAL: %d\n", t->val);
-    printf("IDX ATUAL: %d\n\n", d);*/
 
     if (c < t->c) { return rec_search(t->l, key, d); }
     else if (c > t->c) { return rec_search(t->r, key, d); }

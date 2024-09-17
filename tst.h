@@ -2,14 +2,11 @@
 #define TST_H
 
 typedef int Value;
-
-
 typedef struct string String;
+typedef struct node TST;
 
 String *string_create(char *str);
 void string_free(String *s);
-
-typedef struct node TST;
 
 TST *create_node();
 TST* rec_insert(TST* t, String* key, Value val, int d);
