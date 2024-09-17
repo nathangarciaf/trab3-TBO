@@ -18,6 +18,7 @@ TST* TST_insert(TST* t, String* key , String* val);
 TST* rec_search(TST* t, String* key, int d);
 Value *TST_search(TST* t, String* key);
 
+void print_val(Value *v);
 void TST_free(TST *t);
 
 #endif

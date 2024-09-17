@@ -34,7 +34,11 @@ TST *read_dir_files(TST *t, TST *stopwords, char *dir, FILE *index){
                 String *s = string_create(str);
                 Value *val = TST_search(stopwords, s);
 
-                if(!val) { t = TST_insert(t, s, s); }
+                
+                if(!val) { 
+                    String *value = string_create(dir_buffer);
+                    t = TST_insert(t, s, value); 
+                }
                     
                 str = strtok(NULL, " \n");
                 string_free(s);

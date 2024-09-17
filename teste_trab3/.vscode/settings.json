@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "tst.h": "c",
+        "reader.h": "c"
+    }
+}

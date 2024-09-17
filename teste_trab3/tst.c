@@ -120,6 +120,13 @@ void val_free(Value *v){
     free(v);
 }
 
+void print_val(Value *v){
+    String **s = v->files;
+    for (int i = 0; i < v->size; i++){
+        printf("ARQUIVO: %s\n", s[i]->c);
+    }
+    return;
+}
 
 void TST_free(TST *t){
     if(t == NULL) { return; }
