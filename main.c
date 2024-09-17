@@ -1,52 +1,7 @@
-#include <stdio.h>
-#include <dirent.h>
 #include <string.h>
-#include <stdlib.h>
 
-#define INDEX_ALLOC 8
-#define INDEX_LINE_LENGTH 128
-
-struct index {
-    char **docs;
-    int size, alloc;
-};
-
-typedef struct index Index;
-
-Index *index_init(){
-    Index *i = (Index*)calloc(1,sizeof(Index));
-    i->docs = (char**)calloc(INDEX_ALLOC, sizeof(char*));
-    i->size = 0;
-    i->alloc = INDEX_ALLOC;
-    return i;
-}
-
-void index_read(Index *i, FILE *f){
-    char buffer[INDEX_LINE_LENGTH];
-    while (fgets(buffer, INDEX_LINE_LENGTH, f)){
-        if(i->size == i->alloc){
-            i->alloc *= 2;
-            i->docs = (char**)realloc(i->docs, i->alloc * sizeof(char*));
-        }
-        i->docs[i->size] = (char*)malloc((strlen(buffer) + 1) * sizeof(char));
-        strcpy(i->docs[i->size], buffer);
-        i->size++;        
-    }       
-}
-
-void print_index(Index *index){
-    for(int i =0; i < index->size; i++){
-        printf("STR %d: %s\n", i, index->docs[i]);
-    }
-}
-
-void index_free(Index *index){
-    for(int i = 0; i < index->size; i++){
-        free(index->docs[i]);
-    }
-    free(index->docs);
-    free(index);
-}
+#include "tst.h"
+#include "reader.h"
 
 int main(int argc, char *argv[]){
     if(argc < 5){
@@ -62,37 +17,26 @@ int main(int argc, char *argv[]){
     Index *idx = index_init();
     index_read(idx, index);
 
-    print_index(idx);
+    FILE *s = fopen(argv[2], "r");
+
+    TST *stopwords = NULL;
+    stopwords = read_file(stopwords, s);
+
+    FILE *graph = fopen(argv[3], "r");
+
+    TST *words = NULL;
+    words = read_pages(words, argv[4], idx);
+
+    String *s1 = string_create("abacate");
+    //int d1 = TST_search(stopwords, s1);
+    string_free(s1);
+
+    TST_free(words);
+    TST_free(stopwords);
     index_free(idx);
 
-    FILE *stopwords = fopen(argv[2], "r");
-    FILE *graph = fopen(argv[3], "r");
-    printf("%s\n%s\n%s\n",argv[1],argv[2],argv[3]);
-
-    fclose(stopwords);
+    fclose(s);
     fclose(graph);
     fclose(index);
-
-    DIR *diretorio;
-    struct dirent *entrada;
-
-    diretorio = opendir(argv[4]);
-    if (diretorio == NULL) {
-        perror("Erro ao abrir o diretório");
-        return 0;
-    }
-
-    printf("\n");
-    while ((entrada = readdir(diretorio)) != NULL) {
-        // Ignorar os diretórios "." e ".."
-        if (strcmp(entrada->d_name, ".") != 0 && strcmp(entrada->d_name, "..") != 0) {
-            char caminho_completo[512];
-            snprintf(caminho_completo, sizeof(caminho_completo), "%s/%s", argv[4], entrada->d_name);
-            //printf("%s\n",entrada->d_name);
-            //ler_arquivo(caminho_completo);
-        }
-    }
-
-    closedir(diretorio);
     return 0;
 }
