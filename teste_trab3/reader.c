@@ -32,9 +32,9 @@ TST *read_dir_files(TST *t, TST *stopwords, char *dir, FILE *index){
 
             while (str != NULL) {
                 String *s = string_create(str);
-                Value val = TST_search(stopwords, s);
+                Value *val = TST_search(stopwords, s);
 
-                if(!val) { t = TST_insert(t, s, 1); }
+                if(!val) { t = TST_insert(t, s, s); }
                     
                 str = strtok(NULL, " \n");
                 string_free(s);
@@ -58,7 +58,8 @@ TST *read_file(TST *t, FILE *f){
 
     while ((nread = getline(&buffer, &len, f)) != -1) {
         String *s = string_create(buffer);
-        t = TST_insert(t,s, 1);
+        String *val = string_create("");
+        t = TST_insert(t,s, val);
         string_free(s);
     }
 

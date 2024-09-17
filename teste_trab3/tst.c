@@ -15,7 +15,7 @@ struct value {
 };
 
 struct node {
-    Value val;
+    Value *val;
     unsigned char c;
     TST *l, *m, *r;
 };
@@ -28,12 +28,14 @@ String *string_create(char *str) {
         str[len - 1] = '\0';
         len--; 
     }
-    for(int i = 0; i < len; i++){
-        if(isupper(str[i]))
-            str[i] = tolower(str[i]);
-    }
+
     s->c = (char*)calloc((len + 1), sizeof(char));
     strcpy(s->c, str);
+
+    for(int i = 0; i < len; i++){
+        if(isupper(s->c[i]))
+            s->c[i] = tolower(s->c[i]);
+    }
     s->len = len;
 
     return s;
@@ -44,15 +46,33 @@ void string_free(String *s){
     free(s);
 }
 
+Value *val_init(){
+    Value *v = (Value*)calloc(1,sizeof(Value));
+    v->alloc = 2;
+    v->files = (String**)calloc(v->alloc, sizeof(String*));
+    v->size = 0;
+    return v;
+}
+
 TST *create_node(){
     TST *t = (TST*)calloc(1, sizeof(TST));
     t->l = t->r = t->m = NULL;
-    t->val = 0;
+    t->val = NULL;
     t->c = '\0';
     return t;
 }
 
-TST* rec_insert(TST* t, String* key, Value val, int d) {
+void TST_add_value(TST *t, String *val){
+    Value *v = t->val;
+    if(v->alloc == v->size){
+        v->alloc *= 2;
+        v->files = (String**)realloc(v->files, v->alloc * sizeof(String*) ) ;
+    }
+    v->files[v->size] = val;
+    v->size++;
+}
+
+TST* rec_insert(TST* t, String* key, String* val, int d) {
     unsigned char c = key->c[d];
     if (t == NULL) { t = create_node(); t->c = c;}
     if (c < t->c) {  t->l = rec_insert(t->l, key, val, d); }
@@ -62,15 +82,15 @@ TST* rec_insert(TST* t, String* key, Value val, int d) {
         t->m = rec_insert(t->m, key, val, d+1);
     } 
     else {
-        if(t->val)
-            t->val++;
-        else
-            t->val = val;
+        if(!t->val)
+            t->val = val_init();
+        TST_add_value(t, val);
+        
     }
     return t;
 }
 
-TST* TST_insert(TST* t, String* key , Value val) {
+TST* TST_insert(TST* t, String* key , String* val) {
     return rec_insert(t, key, val, 0);
 }
 
@@ -86,10 +106,18 @@ TST* rec_search(TST* t, String* key, int d) {
     else { return t; }
 }
 
-Value TST_search(TST* t, String* key) {
+Value *TST_search(TST* t, String* key) {
     t = rec_search(t, key, 0);
     if (t == NULL) { return 0; }
     else { return t->val; }
+}
+
+void val_free(Value *v){
+    for(int i = 0; i < v->size; i++){
+        string_free(v->files[i]);
+    }
+    free(v->files);
+    free(v);
 }
 
 
@@ -98,6 +126,9 @@ void TST_free(TST *t){
     TST_free(t->l);
     TST_free(t->m);
     TST_free(t->r);
+
+    if(t->val)
+        val_free(t->val);
     free(t);
 }
 
