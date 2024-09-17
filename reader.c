@@ -30,9 +30,10 @@ TST *read_pages(TST *t, TST *stopwords, char *dir, Index *idx){
             char *str = strtok(buffer, " \n");
 
             while (str != NULL) {
-                printf("TOKEN: %s\n", str);
                 String *s = string_create(str);
-                t = TST_insert(t, s, 1);
+                int val = TST_search(stopwords, s);
+                if(!val) { t = TST_insert(t, s, 1); }
+                    
                 str = strtok(NULL, " \n");
                 string_free(s);
             }

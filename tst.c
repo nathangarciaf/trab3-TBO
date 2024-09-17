@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 struct string {
     char *c;
@@ -16,7 +17,10 @@ String *string_create(char *str) {
         str[len - 1] = '\0';
         len--; 
     }
-
+    for(int i = 0; i < len; i++){
+        if(isupper(str[i]))
+            str[i] = tolower(str[i]);
+    }
     s->c = (char*)calloc((len + 1), sizeof(char));
     strcpy(s->c, str);
     s->len = len;
@@ -46,7 +50,6 @@ TST *create_node(){
 TST* rec_insert(TST* t, String* key, Value val, int d) {
     unsigned char c = key->c[d];
     if (t == NULL) { t = create_node(); t->c = c;}
-
     if (c < t->c) {  t->l = rec_insert(t->l, key, val, d); }
     else if (c > t->c) { t->r = rec_insert(t->r, key, val, d); }
 

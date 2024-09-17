@@ -17,25 +17,29 @@ int main(int argc, char *argv[]){
     Index *idx = index_init();
     index_read(idx, index);
 
-    FILE *s = fopen(argv[2], "r");
-
+    FILE *stopword_file = fopen(argv[2], "r");
+    if(!stopword_file) {
+        printf("Erro no arquivo: %s\n", argv[2]);
+        return 1;
+    }
     TST *stopwords = NULL;
-    stopwords = read_file(stopwords, s);
-
-    FILE *graph = fopen(argv[3], "r");
+    stopwords = read_file(stopwords, stopword_file);
 
     TST *words = NULL;
-    words = read_pages(words, argv[4], idx);
+    words = read_pages(words, stopwords, argv[4], idx);
 
-    String *s1 = string_create("abacate");
-    //int d1 = TST_search(stopwords, s1);
-    string_free(s1);
+    /*String *s1 = string_create("fruta");
+    int d1 = TST_search(words, s1);
+    printf("D1: %d",d1);
+    string_free(s1);*/
+
+    FILE *graph = fopen(argv[3], "r");
 
     TST_free(words);
     TST_free(stopwords);
     index_free(idx);
 
-    fclose(s);
+    fclose(stopword_file);
     fclose(graph);
     fclose(index);
     return 0;
