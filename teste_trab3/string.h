@@ -10,5 +10,6 @@ char string_get_char(String *s, int d);
 int string_len(String *s);
 void string_array_print(String **s, int size);
 void string_print(String *s);
+char *string_get(String *s);
 
 #endif

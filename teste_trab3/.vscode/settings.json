@@ -2,6 +2,12 @@
     "files.associations": {
         "tst.h": "c",
         "reader.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "index.h": "c",
+        "string": "c",
+        "array": "c",
+        "string_view": "c",
+        "initializer_list": "c",
+        "utility": "c"
     }
 }

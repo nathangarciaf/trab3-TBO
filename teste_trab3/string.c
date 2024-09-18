@@ -37,6 +37,10 @@ void string_array_print(String **s, int size){
     }
 }
 
+char *string_get(String *s){
+    return s->c;
+}
+
 void string_print(String *s){
     printf("STRING: %s\n", s->c);
 }

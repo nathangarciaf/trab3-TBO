@@ -5,11 +5,9 @@
 
 struct document {
     String *c;
-    Document **linked_out_documents;
-    int size_out, alloc_out;
 
-    Document **linked_in_documents;
-    int size_in, alloc_in;
+    Document **linked_documents;
+    int size, alloc, amount_out;
 };
 
 
@@ -35,32 +33,72 @@ void index_insert_document(Index *i, Document *d){
     i->size++;
 }
 
+Document **index_get_documents(Index *i){
+    return i->d;
+}
+
 Document *document_init(String *s){
     Document *d = (Document*)calloc(1, sizeof(Document));
     d->c = s;
 
-    d->alloc_in = 2;
-    d->alloc_out = 2;
+    d->alloc = 0;
+    d->amount_out = 0;
     
-    d->linked_in_documents = (Document**)calloc(d->alloc_in, sizeof(Document*));
-    d->linked_out_documents = (Document**)calloc(d->alloc_out,sizeof(Document*));
+    d->linked_documents = NULL;
 
-    d->size_in = 0;
-    d->size_out = 0;
+    d->size = 0;
     return d;
 }
 
+Document *document_find(Document **d, int size, String *key){
+    for(int i = 0; i < size; i++){
+        //printf("STR 1: %s, STR 2: %s\n", string_get(d[i]->c), string_get(key));
+        if(!compare_from(d[i]->c,key, 0))
+            return d[i];
+    }
+    return NULL;
+}
+
+void document_print(Document *d){
+    printf("ARQUIVO RESGATADO %s\n",string_get(d->c));
+}
+
+void document_insert_linked(Document *d, Document *l){
+    //printf("SIZE: %d\nALLOC: %d\n", d->size,d->alloc);
+    d->linked_documents[d->size] = l;
+    d->size++;
+}
+
+void document_alloc_links(Document *d, int alloc){
+    if(!d)
+        exit(1);
+    d->alloc = alloc;
+    d->linked_documents = (Document**)calloc(d->alloc, sizeof(Document*));
+}
+
+void document_add_out(Document *d){
+    d->amount_out++;
+}
+
 void document_free(Document *d){
-    free(d->linked_in_documents);
-    free(d->linked_out_documents);
+    if(d->linked_documents)
+        free(d->linked_documents);
     string_free(d->c);
     free(d);
+}
+
+int index_get_size(Index *index){
+    return index->size;
 }
 
 void index_print(Index *index){
     for(int i = 0; i < index->size; i++){
         string_print(index->d[i]->c);
     }
+
+}
+
+void document_report(Document **d, int size){
     
 }
 

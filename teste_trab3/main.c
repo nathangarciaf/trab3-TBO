@@ -1,9 +1,11 @@
-#include <string.h>
-
 #include "tst.h"
 #include "reader.h"
 #include "index.h"
+
 #include <sys/types.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 int main(int argc, char *argv[]){
     if(argc < 5){
@@ -24,7 +26,7 @@ int main(int argc, char *argv[]){
     }
 
     TST *stopwords = NULL;
-    stopwords = read_file(stopwords, stopword_file);
+    stopwords = read_stopwords(stopwords, stopword_file);
 
     Index *i = index_init();
 
@@ -62,6 +64,13 @@ int main(int argc, char *argv[]){
     free(line);
 
     FILE *graph = fopen(argv[3], "r");
+    if(!graph) {
+        printf("Erro no arquivo: %s\n", argv[3]);
+        return 1;
+    }
+
+    read_graph(i, graph);
+
     fclose(graph);
     
     index_free(i);

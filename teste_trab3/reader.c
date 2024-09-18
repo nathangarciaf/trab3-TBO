@@ -1,4 +1,8 @@
 #include "reader.h"
+#include <sys/types.h>
+#include <stdlib.h>
+#include "string.h"
+#include <string.h>
 
 TST *read_dir_files(TST *t, TST *stopwords, char *dir, Index* i, FILE *index){
     char *dir_buffer = NULL;
@@ -52,7 +56,7 @@ TST *read_dir_files(TST *t, TST *stopwords, char *dir, Index* i, FILE *index){
     return t;
 }
 
-TST *read_file(TST *t, FILE *f){
+TST *read_stopwords(TST *t, FILE *f){
     char *buffer = NULL;
     size_t len = 0;
     int nread = 0;
@@ -66,4 +70,46 @@ TST *read_file(TST *t, FILE *f){
 
     free(buffer);
     return t;
+}
+
+void read_graph(Index *i, FILE *f){
+    char *buffer = NULL;
+    size_t len = 0;
+    int nread = 0;
+
+    //printf("\n");
+
+    while ((nread = getline(&buffer, &len, f)) != -1) {
+        char *token = strtok(buffer, " \n");
+        Document *current_doc = NULL;
+        Document *linked_docs = NULL;
+        int col = 0;
+        while(token){
+            //printf("COL: %d\nTOKEN: %s\n\n", col,token);
+            int convert = atoi(token);
+            if(col == 1){
+                //printf("ATOI: %d\n", convert);
+                document_alloc_links(current_doc,convert);
+            }
+            else {
+                String *tk = string_create(token);
+                linked_docs = document_find(index_get_documents(i), index_get_size(i), tk);
+                if(!col){
+                    current_doc = linked_docs;
+                    document_print(current_doc);
+                }
+                else{
+                    document_insert_linked(current_doc, linked_docs);
+                    document_add_out(linked_docs);
+                }
+                string_free(tk);
+            }
+            col++;
+            token = strtok(NULL, " \n");
+        }
+        //printf("\n");
+        
+    }
+    free(buffer);
+    document_report(index_get_documents(i), index_get_size(i));
 }
