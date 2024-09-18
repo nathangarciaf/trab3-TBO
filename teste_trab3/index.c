@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define ALFA 0.85
+
 struct index {
     Document **d;
     int size, alloc;
