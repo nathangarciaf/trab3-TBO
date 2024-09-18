@@ -16,6 +16,10 @@ Index *index_init(){
     return i;
 }
 
+double page_rank(Document *d){
+
+}
+
 void index_insert_document(Index *i, Document *d){
     if(i->alloc == i->size){
         i->alloc *=2;
