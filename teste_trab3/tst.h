@@ -2,6 +2,7 @@
 #define TST_H
 
 #include "string.h"
+#include "index.h"
 
 #define VAL_DEFAULT_ALLOC 2
 
@@ -23,6 +24,6 @@ void Value_print(Value *v);
 void TST_free(TST *t);
 void Value_free_reduced(Value *v);
 void Value_free(Value *v);
-void print_results(char *s, Value *v);
+void print_results(char *s, Value *v, Index *i);
 
 #endif

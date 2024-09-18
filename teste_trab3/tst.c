@@ -107,7 +107,7 @@ Value *intersect_val(Value *commom, Value *v){
     return commom;
 }
 
-void print_results(char *s, Value *v){
+void print_results(char *s, Value *v, Index *i){
     printf("search:%s\n", s);
     
     printf("pages:");

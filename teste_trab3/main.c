@@ -66,7 +66,7 @@ int main(int argc, char *argv[]){
             str = strtok(NULL, " \n");
         }
 
-        print_results(og_line, commom_files);
+        print_results(og_line, commom_files, i);
         free(og_line);
         Value_free_reduced(commom_files);
     }
