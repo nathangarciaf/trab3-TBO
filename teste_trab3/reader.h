@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "tst.h"
 #include "index.h"
+#include "document.h"
 
 TST *read_stopwords(TST *t, FILE *f);
 TST *read_dir_files(TST *t, TST *stopwords, char *dir,Index* i, FILE *index);

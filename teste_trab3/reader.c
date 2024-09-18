@@ -110,5 +110,5 @@ void read_graph(Index *i, FILE *f){
         //printf("\n");
     }
     free(buffer);
-    //document_report(index_get_documents(i), index_get_size(i));
+    document_report(index_get_documents(i), index_get_size(i));
 }
