@@ -9,7 +9,7 @@ struct document {
     Document **linked_documents;
     int size, alloc;
 
-    int amount_out;
+    int amount_out; // Número de documentos que o documento atua aponta
     double pagerank, prev_pagerank;
 };
 
