@@ -27,11 +27,21 @@ int main(int argc, char *argv[]){
 
     TST *stopwords = NULL;
     stopwords = read_stopwords(stopwords, stopword_file);
+    fclose(stopword_file);
 
     Index *i = index_init();
-
     TST *words = NULL;
     words = read_dir_files(words, stopwords, argv[4], i, index);
+    fclose(index);
+
+    FILE *graph = fopen(argv[3], "r");
+    if(!graph) {
+        printf("Erro no arquivo: %s\n", argv[3]);
+        return 1;
+    }
+
+    read_graph(i, graph);
+    fclose(graph);
 
     char *line = NULL;
     size_t size = 0;
@@ -62,22 +72,11 @@ int main(int argc, char *argv[]){
     }
     
     free(line);
-
-    FILE *graph = fopen(argv[3], "r");
-    if(!graph) {
-        printf("Erro no arquivo: %s\n", argv[3]);
-        return 1;
-    }
-
-    read_graph(i, graph);
-
-    fclose(graph);
     
     index_free(i);
     TST_free(stopwords);
     TST_free(words);
 
-    fclose(stopword_file);
-    fclose(index);
+    
     return 0;
 }

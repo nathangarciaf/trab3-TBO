@@ -99,7 +99,17 @@ void index_print(Index *index){
 }
 
 void document_report(Document **d, int size){
-    
+    for(int i = 0; i < size; i++){
+        Document *curr = d[i];
+        printf("DOCUMENTO ATUAL: %s\n", string_get(curr->c));
+        printf("DOCUMENTOS LINKADOS: ");
+        for(int j = 0; j < curr->size; j++){
+            Document *l = curr->linked_documents[j];
+            printf("%s ", string_get(l->c));
+        }
+        printf("\n");
+        printf("DOCUMENTOS COM LINK PARA O DOCUMENTO ATUAL: %d\n\n", curr->amount_out);
+    }
 }
 
 void index_free(Index *index){

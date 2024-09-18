@@ -96,7 +96,7 @@ void read_graph(Index *i, FILE *f){
                 linked_docs = document_find(index_get_documents(i), index_get_size(i), tk);
                 if(!col){
                     current_doc = linked_docs;
-                    document_print(current_doc);
+                    //document_print(current_doc);
                 }
                 else{
                     document_insert_linked(current_doc, linked_docs);
@@ -108,8 +108,7 @@ void read_graph(Index *i, FILE *f){
             token = strtok(NULL, " \n");
         }
         //printf("\n");
-        
     }
     free(buffer);
-    document_report(index_get_documents(i), index_get_size(i));
+    //document_report(index_get_documents(i), index_get_size(i));
 }
