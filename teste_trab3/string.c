@@ -31,10 +31,14 @@ String *string_create(char *str) {
     return s;
 }
 
-void string_print(String **s, int size){
+void string_array_print(String **s, int size){
     for(int i = 0; i < size; i++){
         printf("%s ", s[i]->c);
     }
+}
+
+void string_print(String *s){
+    printf("STRING: %s\n", s->c);
 }
 
 char string_get_char(String *s, int d){

@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "tst.h": "c",
-        "reader.h": "c"
+        "reader.h": "c",
+        "string.h": "c"
     }
 }

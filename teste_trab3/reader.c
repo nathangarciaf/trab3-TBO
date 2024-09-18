@@ -1,23 +1,23 @@
 #include "reader.h"
 
-TST *read_dir_files(TST *t, TST *stopwords, char *dir, FILE *index){
+TST *read_dir_files(TST *t, TST *stopwords, char *dir, Index* i, FILE *index){
     char *dir_buffer = NULL;
     size_t dir_len = 0;
     int nread = 0;
 
     while ((nread = getline(&dir_buffer, &dir_len, index)) != -1) {
-        //\n
         int buffer_len = strlen(dir_buffer);
-        if( dir_buffer[buffer_len - 1] == '\n')
-            dir_buffer[buffer_len - 1] = '\0'; 
-        //printf("BUFFER: %s\n", buffer);
+        if( dir_buffer[buffer_len - 1] == '\n') { dir_buffer[buffer_len - 1] = '\0'; }
+
+        String *buffer_str = string_create(dir_buffer);
+        Document *d = document_init(buffer_str);
+        index_insert_document(i,d);
 
         int path_len = strlen(dir) + strlen(dir_buffer) + 2;
         char *path = (char*)calloc(path_len, sizeof(char));
         strcpy(path, dir);
         strcat(path, "/");
         strcat(path, dir_buffer);
-        //printf("PATH: %s\n", path);
 
         FILE *f = fopen(path,"r");
         if(!f){
@@ -34,7 +34,6 @@ TST *read_dir_files(TST *t, TST *stopwords, char *dir, FILE *index){
             while (str != NULL) {
                 String *s = string_create(str);
                 Value *val = TST_search(stopwords, s);
-
                 
                 if(!val) { 
                     String *value = string_create(dir_buffer);
@@ -44,9 +43,6 @@ TST *read_dir_files(TST *t, TST *stopwords, char *dir, FILE *index){
                 str = strtok(NULL, " \n");
                 string_free(s);
             }
-            //String *s = string_create(buffer);
-            //printf("%s\n", buffer);
-            //t = TST_insert(t,str, 1);
         }
         free(buffer);
         fclose(f);

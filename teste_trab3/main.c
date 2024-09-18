@@ -2,6 +2,7 @@
 
 #include "tst.h"
 #include "reader.h"
+#include "index.h"
 #include <sys/types.h>
 
 int main(int argc, char *argv[]){
@@ -25,8 +26,10 @@ int main(int argc, char *argv[]){
     TST *stopwords = NULL;
     stopwords = read_file(stopwords, stopword_file);
 
+    Index *i = index_init();
+
     TST *words = NULL;
-    words = read_dir_files(words, stopwords, argv[4], index);
+    words = read_dir_files(words, stopwords, argv[4], i, index);
 
     char *line = NULL;
     size_t size = 0;
@@ -61,6 +64,7 @@ int main(int argc, char *argv[]){
     FILE *graph = fopen(argv[3], "r");
     fclose(graph);
     
+    index_free(i);
     TST_free(stopwords);
     TST_free(words);
 

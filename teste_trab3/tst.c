@@ -34,7 +34,7 @@ TST* rec_insert(TST* t, String* key, String* val, int d) {
     } 
     else {
         if(!t->val)
-            t->val = val_init();
+            t->val = Value_init();
         Value_insert(t->val, val);
         
     }
@@ -63,7 +63,7 @@ Value *TST_search(TST* t, String* key) {
     else { return t->val; }
 }
 
-Value *val_init(){
+Value *Value_init(){
     Value *v = (Value*)calloc(1,sizeof(Value));
     v->alloc = 2;
     v->files = (String**)calloc(v->alloc, sizeof(String*));
@@ -82,7 +82,7 @@ void Value_insert(Value *v, String *s){
 
 Value *intersect_val(Value *commom, Value *v){
     if(!commom){
-        commom = val_init();
+        commom = Value_init();
         //printf("SIZE V: %d\n", v->size);
         for(int i = 0; i < v->size; i++){
             Value_insert(commom, v->files[i]);
@@ -90,7 +90,7 @@ Value *intersect_val(Value *commom, Value *v){
         }
     }
     else{
-        Value *result = val_init();
+        Value *result = Value_init();
         for(int i = 0; i < commom->size; i++){
             for(int j = 0; j < v->size; j++){
                 //printf("STR 1:%s\nSTR 2: %s\n", commom->files[i]->c, v->files[j]->c);
@@ -109,18 +109,20 @@ Value *intersect_val(Value *commom, Value *v){
 
 void print_results(char *s, Value *v){
     printf("search:%s\n", s);
+    
     printf("pages:");
-    print_val(v);
+    Value_print(v);
     printf("\n");
+
     printf("pr:");
     printf("\n");
 }
 
-void print_val(Value *v){
+void Value_print(Value *v){
     if(!v)
         return;
     String **s = v->files;
-    string_print(s, v->size);
+    string_array_print(s, v->size);
 }
 
 void Value_free_reduced(Value *v){

@@ -16,10 +16,10 @@ TST* TST_insert(TST* t, String* key , String* val);
 TST* rec_search(TST* t, String* key, int d);
 Value *TST_search(TST* t, String* key);
 
-Value *val_init();
+Value *Value_init();
 Value *intersect_val(Value *commom, Value *v);
 void Value_insert(Value *v, String *s);
-void print_val(Value *v);
+void Value_print(Value *v);
 void TST_free(TST *t);
 void Value_free_reduced(Value *v);
 void Value_free(Value *v);
