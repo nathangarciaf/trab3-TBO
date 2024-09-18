@@ -14,7 +14,7 @@ TST *read_dir_files(TST *t, TST *stopwords, char *dir, Index* i, FILE *index){
         if( dir_buffer[buffer_len - 1] == '\n') { dir_buffer[buffer_len - 1] = '\0'; }
 
         String *buffer_str = string_create(dir_buffer);
-        Document *d = document_init(buffer_str);
+        Document *d = document_init(buffer_str, index_get_size(i));
         index_insert_document(i,d);
 
         int path_len = strlen(dir) + strlen(dir_buffer) + 2;
@@ -89,7 +89,7 @@ void read_graph(Index *i, FILE *f){
             int convert = atoi(token);
             if(col == 1){
                 //printf("ATOI: %d\n", convert);
-                document_alloc_links(current_doc,convert);
+                document_insert_out(current_doc,convert);
             }
             else {
                 String *tk = string_create(token);
@@ -99,8 +99,7 @@ void read_graph(Index *i, FILE *f){
                     //document_print(current_doc);
                 }
                 else{
-                    document_insert_linked(current_doc, linked_docs);
-                    document_add_out(linked_docs);
+                    document_insert_linked(linked_docs, current_doc);
                 }
                 string_free(tk);
             }

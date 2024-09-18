@@ -19,7 +19,7 @@ Index *index_init(){
 }
 
 double pagerank_get(Document *d, int docs){
-
+    return 0.0;
 }
 
 void index_insert_document(Index *i, Document *d){
