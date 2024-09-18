@@ -1,7 +1,11 @@
-#include <string.h>
-
 #include "tst.h"
 #include "reader.h"
+#include "index.h"
+
+#include <sys/types.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 int main(int argc, char *argv[]){
     if(argc < 5){
@@ -14,8 +18,6 @@ int main(int argc, char *argv[]){
         printf("Erro no arquivo: %s\n", argv[2]);
         return 1;
     }
-    TST *stopwords = NULL;
-    stopwords = read_file(stopwords, stopword_file);
 
     FILE *index = fopen(argv[1], "r");
     if(!index) {
@@ -23,21 +25,58 @@ int main(int argc, char *argv[]){
         return 1;
     }
 
-    TST *words = NULL;
-    words = read_dir_files(words, stopwords, argv[4], index);
+    TST *stopwords = NULL;
+    stopwords = read_stopwords(stopwords, stopword_file);
+    fclose(stopword_file);
 
-    String *s1 = string_create("abacate");
-    Value d1 = TST_search(words, s1);
-    printf("FREQ: %d\n", d1);
-    string_free(s1);
+    Index *i = index_init();
+    TST *words = NULL;
+    words = read_dir_files(words, stopwords, argv[4], i, index);
+    fclose(index);
 
     FILE *graph = fopen(argv[3], "r");
+    if(!graph) {
+        printf("Erro no arquivo: %s\n", argv[3]);
+        return 1;
+    }
+
+    read_graph(i, graph);
     fclose(graph);
 
-    TST_free(words);
-    TST_free(stopwords);
+    char *line = NULL;
+    size_t size = 0;
+    ssize_t nread = 0;
 
-    fclose(stopword_file);
-    fclose(index);
+    while ((nread = getline(&line, &size, stdin)) != -1) {
+        int len = strlen(line);
+        char *og_line = (char*)calloc((len + 1), sizeof(char));
+        strcpy(og_line, line);
+        og_line[len-1] = '\0';
+        
+        char *str = strtok(line, " \n");
+        Value *commom_files = NULL;
+
+        while (str != NULL) {
+            String *string = string_create(str);
+            Value *v = TST_search(words, string);
+            string_free(string);
+
+            if(v){ commom_files = intersect_val(commom_files, v); }
+
+            str = strtok(NULL, " \n");
+        }
+
+        print_results(og_line, commom_files);
+        free(og_line);
+        Value_free_reduced(commom_files);
+    }
+    
+    free(line);
+    
+    index_free(i);
+    TST_free(stopwords);
+    TST_free(words);
+
+    
     return 0;
 }
