@@ -18,7 +18,7 @@ Index *index_init(){
     return i;
 }
 
-double page_rank(Document *d){
+double pagerank_get(Document *d, int docs){
 
 }
 

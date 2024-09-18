@@ -7,6 +7,7 @@ struct document {
 
     Document **linked_documents;
     int size, alloc, amount_out;
+    double pagerank, prev_pagerank;
 };
 
 Document *document_init(String *s){
