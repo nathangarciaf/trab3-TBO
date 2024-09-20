@@ -1,0 +1,1 @@
+valgrind --leak-check=full ./trab3 input/ < entrada.txt
